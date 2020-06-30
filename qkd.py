@@ -22,6 +22,8 @@ class bb84:
         self.bob_bases = []
         self.bob_bits = []
 
+        self.key = None
+
 
     def run_protocol(self, distance, user_input=False):
         """
@@ -87,7 +89,7 @@ class bb84:
         if user_input:
           k = int(input("how much of your key do you want to publish to check with Bob?")) #the user decides how much of the key to verify
         else:
-          k = self.n//4
+          k = max(1, len(new_b_bits)//4)
         print("Alice: 'here are my first", k, " bits:\t", new_a_bits[:k], "'")
         print("Bob: 'ok, here are mine:\t", new_b_bits[:k]) #they each publish the first k of their bits
 
@@ -95,7 +97,8 @@ class bb84:
             print("then we have failed")
         else:
             print("success! We shall use the rest of our bits as our secret key!!")
-            key = "".join(new_a_bits[k:]) #a key has been formed     
+            key = "".join(new_a_bits[k:]) #a key has been formed    
+            print("(key=", key, ")") 
         self.key = key
 
 
@@ -124,6 +127,7 @@ class bb84:
         self.bob_bits.append(int(result)) #stores the result
 
     def get_key(self):
+        if len(self.key) == 0: return "error"
         return self.key
 
 def calc_loss(p, distance):
