@@ -8,7 +8,7 @@ import math
 import binascii
 
 import pop_up
-pop_up.popUpWindow("warning", "if this isnt here everything crashes")
+pop_up.popUpWindow("Warning!", "If this isn't here everything crashes")
 
 #import TextBox
 #Colors
@@ -111,11 +111,12 @@ def show_tutorial():
                 pygame.quit()
                 quit()
         gameDisplay.fill(background)
-        createTextCenter((display_width / 2), (display_height / 7), "In this level you will learn about chaining quantum repeaters to create a secure connection between any user", 20)
-        createTextCenter(display_width/2, (display_height /7 + 30), "Qubits can be sent over lossy channels to create private keys.", 20)
-        createTextCenter(display_width/2, display_height / 7 + 60, "Your first step will be to create a network of repeaters.", 20)
+        createTextCenter((display_width / 2), (display_height / 3), "In this level you will learn about chaining quantum repeaters", 18)
+        createTextCenter((display_width / 2), (display_height / 3 + 30), "to create a secure connection between any user",18)
+        createTextCenter(display_width/2, (display_height /3 + 60), "Qubits can be sent over lossy channels to create private keys.", 18)
+        createTextCenter(display_width/2, display_height / 3 + 90, "Your first step will be to create a network of repeaters.", 18)
 
-        exit_button = button("go to game", display_width/2 - 75, 350, 150, 50, green, dark_green, action=main_loop)
+        exit_button = button("Go to Game", display_width/2 - 75, 350, 150, 50, green, dark_green, action=main_loop)
         pygame.display.update()
         clock.tick(15)
 
