@@ -674,9 +674,9 @@ def tutorial():
         createTextCenter((display_width / 2), (display_height / 7 + 200),
                          "first observation. Thus, if hackers observed the Qubits before", 20)
         createTextCenter((display_width / 2), (display_height / 7 + 230),
-                         "the receiver, the bit sequence will be different and users will", 20)
+                         "the receiver, the result will be different when users comparing", 20)
         createTextCenter((display_width / 2), (display_height / 7 + 260),
-                         "know the key is not safe when comparing the key sequence.", 20)
+                         "the key sequence and users will know the key is not safe.", 20)
 
         createTextCenter((display_width / 2), (display_height / 7 + 310),
                          "In this game, We are going to simulate the process of generating", 20)
