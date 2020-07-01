@@ -8,7 +8,7 @@ import math
 import binascii
 
 import pop_up
-pop_up.popUpWindow("fml", "if this isnt here everything crashes")
+pop_up.popUpWindow("warning", "if this isnt here everything crashes")
 
 #import TextBox
 #Colors
@@ -44,7 +44,7 @@ z0 = pygame.image.load('imgs/0z.png')
 axisx = pygame.image.load('imgs/x.png')
 axisz = pygame.image.load('imgs/y.png')
 P = pygame.image.load('imgs/Capture.PNG')
-tip = pygame.image.load('tooltip.png')
+tip = pygame.image.load('imgs/tooltip.png')
 
 
 #repeater initials
@@ -88,7 +88,7 @@ def show_message(message):
             if event.type == pygame.QUIT:
                 quitgame()
 
-        gameDisplay.fill(white)
+        gameDisplay.fill(background)
 
         close = button("X", display_width - 40, 20, 20, 20, dark_red, red, action=main_loop)
 
@@ -101,7 +101,7 @@ def show_message(message):
         clock.tick(15)
 
 def show_tutorial():
-    show_message("In this level you will learn about chaining quantum repeaters to create a secure connection between any user")
+    show_message("In this level you will learn about chaining quantum repeaters to create a secure connection between any user. Qubits can be sent over lossy channels to create private keys. Your first step will be to create a network of repeaters.")
 
 
 def draw_grid(top_left=(0, 0), width=display_width, height=int(display_height * 2 / 3)):  # 0 gamewidth 2/3 gamewidth
@@ -139,7 +139,7 @@ def draw_connections():
 
 
 def main_loop():
-    #textinput.clear_text()
+    textinput.clear_text()
     qubits = 0
     intro = True
 
@@ -881,5 +881,5 @@ def sender_help():
     pass
 
 
-#game_intro()
-main_loop()
+game_intro()
+#main_loop()
