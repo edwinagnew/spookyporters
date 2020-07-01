@@ -547,7 +547,7 @@ def button(text, x, y, w, h, dark, light, action=None, text_size=20):
     gameDisplay.blit(textSurf, textRect)
 
 
-def hover(x, y, hover_text):
+def hover(x, y, hover_text, line2='',line3=''):
     mouse = pygame.mouse.get_pos()
     showImg(x,y, tip)
     if x + 16 > mouse[0] > x and y + 16 > mouse[1] > y:
@@ -656,26 +656,34 @@ def tutorial():
                 quit()
         gameDisplay.fill(background)
 
-        createTextCenter((display_width / 2), (display_height / 4),
+        createTextCenter((display_width / 2), (display_height / 7),
                          "In Quantum Communication, one way to encrypy the message", 20)
-        createTextCenter((display_width / 2), (display_height / 4 + 30),
+        createTextCenter((display_width / 2), (display_height / 7 + 30),
                          "is to use the method called Quantum Key Distribution.", 20)
-
-        createTextCenter((display_width / 2), (display_height / 4 + 80),
+        createTextCenter((display_width / 2), (display_height / 7 + 60),
                        "It's not using Qubits to carry messages but is using Qubits to", 20)
-        createTextCenter((display_width / 2), (display_height / 4 + 110),
+        createTextCenter((display_width / 2), (display_height / 7 + 90),
                          "generate a unique key for the message that known only to", 20)
-        createTextCenter((display_width / 2), (display_height / 4 + 140),
+        createTextCenter((display_width / 2), (display_height / 7 + 120),
                          "the sender and receiver.", 20)
 
-        createTextCenter((display_width / 2), (display_height / 4 + 190),
-                         "In this game, We are going to simulate the process of", 20)
-        createTextCenter((display_width / 2), (display_height / 4 + 220),
-                         "generating a random secret key shared between the sender", 20)
-        createTextCenter((display_width / 2), (display_height / 4 + 250),
-                         "and receiver by using BB84 protocol.", 20)
+        createTextCenter((display_width / 2), (display_height / 7 + 170),
+                         "The method is very safe as Qubits will change their states after", 20)
+        createTextCenter((display_width / 2), (display_height / 7 + 200),
+                         "first observation. Thus, if hackers observed the Qubits before", 20)
+        createTextCenter((display_width / 2), (display_height / 7 + 230),
+                         "the receiver, the bit sequence will be different and users will", 20)
+        createTextCenter((display_width / 2), (display_height / 7 + 260),
+                         "know the key is not safe when comparing the key sequence.", 20)
 
-        button("Continue!", 250, 480, 300, 50, dark_green, green, game_Sender)
+        createTextCenter((display_width / 2), (display_height / 7 + 310),
+                         "In this game, We are going to simulate the process of generating", 20)
+        createTextCenter((display_width / 2), (display_height / 7 + 340),
+                         "a random secret key shared between the sender and receiver", 20)
+        createTextCenter((display_width / 2), (display_height / 7 + 370),
+                         "by using BB84 protocol(the first quantum cryptography protocol).", 20)
+
+        button("Continue!", 250, 500, 300, 50, dark_green, green, game_Sender)
         pygame.display.update()
         clock.tick(15)
 
@@ -696,7 +704,7 @@ def game_Sender():
 
         createTextCenter((display_width / 2), (display_height / 20), "Message Sender", 40)
         showImg(10, 10, P)
-        hover(700, (display_height / 20), "Hello")
+        hover(120, 60, "The")
 
         createTextCenter(display_width / 2, 120, "Please choose the number of Qubits you want to send to generate the key:", 20)
 
