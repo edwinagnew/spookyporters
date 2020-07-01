@@ -458,11 +458,11 @@ def create_key(a, b):
 
         elif q:
             run = False
-            createTextCenter(a[0], a[1] + 100, "My bases were: " + " ".join(q.alice_bases[:5]) + "..." * int(len(q.alice_bases) > 5), 18)
+            createTextCenter(a[0], a[1] + 100, "My bases were: " + " ".join(q.alice_bases[:5]) + "..." * int(len(q.alice_bases) > 5), 15)
 
             if 0.9 < time.time() - t < 1:
                 b_filt = [z for z in q.bob_bases if z != -1]
-                createTextCenter(b[0], b[1] - 50, "My bases were: \n" + " ".join(b_filt[:5]) + "..." * int(len(b_filt) > 5), 18)
+                createTextCenter(b[0], b[1] - 50, "My bases were: " + " ".join(b_filt[:5]) + "..." * int(len(b_filt) > 5), 15)
     
 
             if 3.9 < time.time() - t < 4:
@@ -940,5 +940,5 @@ def sender_help():
     pass
 
 
-#game_intro()
-main_loop()
+game_intro()
+#main_loop()
