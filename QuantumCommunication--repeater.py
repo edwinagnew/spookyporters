@@ -85,25 +85,40 @@ def show_help():
 
 
 def show_message(message):
+    #smallText = pygame.font.Font("freesansbold.ttf", 16)
+    #textSurf, textRect = text_objects(message, smallText)
+    #textRect.center = ((display_width / 2), (display_height / 3))
+    #gameDisplay.blit(textSurf, textRect)
+    createTextCenter(display_width/2, display_height/3, message, 16)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quitgame()
 
-        gameDisplay.fill(background)
 
         close = button("X", display_width - 40, 20, 20, 20, dark_red, red, action=main_loop)
 
-        smallText = pygame.font.Font("freesansbold.ttf", 12)
-        textSurf, textRect = text_objects(message, smallText)
-        textRect.center = ((display_width / 2), (display_height / 3))
-        gameDisplay.blit(textSurf, textRect)
 
         pygame.display.update()
         clock.tick(15)
 
 def show_tutorial():
-    show_message("In this level you will learn about chaining quantum repeaters to create a secure connection between any user. Qubits can be sent over lossy channels to create private keys. Your first step will be to create a network of repeaters.")
+    while True:
+        events = pygame.event.get()
+        for event in events:
+            # print(event)
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        gameDisplay.fill(background)
+        createTextCenter((display_width / 2), (display_height / 7), "In this level you will learn about chaining quantum repeaters to create a secure connection between any user", 20)
+        createTextCenter(display_width/2, (display_height /7 + 30), "Qubits can be sent over lossy channels to create private keys.", 20)
+        createTextCenter(display_width/2, display_height / 7 + 60, "Your first step will be to create a network of repeaters.", 20)
+
+        exit_button = button("go to game", display_width/2 - 75, 350, 150, 50, green, dark_green, action=main_loop)
+        pygame.display.update()
+        clock.tick(15)
+
 
 
 def draw_grid(top_left=(0, 0), width=display_width, height=int(display_height * 2 / 3)):  # 0 gamewidth 2/3 gamewidth
@@ -182,7 +197,7 @@ def main_loop():
         gameDisplay.blit(textSurf, textRect)
 
         add_button = button("add repeater", 50, 480, 150, 50, green, dark_green, action=add)
-        hover(50, 530, "Use this button to add a repeater to your network. Since",  "cloning a quantum state is impossible, a quantum repeater", "works by purifying and switching entaglements")
+        hover(50, 530, "Use this button to add a repeater to your network. Since cloning a quantum state",  " is impossible, a quantum  works by purifying and switching entaglements.", " Any malicious attempt to eavesdrop will noticeably change the qubit's state at which point the connection will be restarted.")
 
 
         if complete_path():
@@ -196,7 +211,7 @@ def main_loop():
         clock.tick(15)
 
 def show_future():
-    pop_up.popUpWindow("future levels", "In the future, as qubit loss decreases and error correction improves, more complicated networks may be simulated in this game. \nOnce qubits can sent deterministically, people may securely send large amounts of data to be computed else and returned to be measured.\n Eventually a quantum internet may be built which promises to revolutionize the spread of information on a scale akin to the development of the classical internet.")
+    pop_up.popUpWindow("future levels", "In the future, as qubit loss decreases and error correction improves, more complicated networks may be developed. \nOnce qubits can sent deterministically, people may securely send large amounts of data to be computed elsewhere and returned to be measured.\n Eventually a quantum internet may be built which promises to revolutionize the spread of information on a scale akin to the development of the classical internet.")
 
 def add():
     pygame.mouse.set_cursor(*pygame.cursors.tri_left)
@@ -407,6 +422,9 @@ def create_key(a, b):
     t = 0
     run = True
     q = None
+
+    added_a = False
+    added_b = False
     while True:
         global n
         # print("n=", n)
@@ -458,12 +476,15 @@ def create_key(a, b):
 
         elif q:
             run = False
-            createTextCenter(a[0], a[1] + 100, "My bases were: " + " ".join(q.alice_bases[:5]) + "..." * int(len(q.alice_bases) > 5), 18)
+            if not added_a: 
+                createTextCenter(a[0], a[1] + 100, "My bases were: " + " ".join(q.alice_bases[:5]) + "..." * int(len(q.alice_bases) > 5), 16)
+                added_a = True
 
             if 0.9 < time.time() - t < 1:
-                b_filt = [z for z in q.bob_bases if z != -1]
-                createTextCenter(b[0], b[1] - 50, "My bases were: \n" + " ".join(b_filt[:5]) + "..." * int(len(b_filt) > 5), 18)
-    
+                b_filt = [z.strip() for z in q.bob_bases if z != -1]
+                if not added_b:
+                    createTextCenter(b[0], b[1] - 50, "My bases were: " + " ".join(b_filt[:5]) + "..." * int(len(b_filt) > 5), 16)
+                    added_b = True
 
             if 3.9 < time.time() - t < 4:
 
@@ -482,7 +503,7 @@ def create_key(a, b):
                 main_loop()
 
         pygame.display.update()
-        clock.tick(30)
+        clock.tick(15)
 
 
 def update_n(val=None):
@@ -940,5 +961,5 @@ def sender_help():
     pass
 
 
-#game_intro()
-main_loop()
+game_intro()
+#main_loop()
