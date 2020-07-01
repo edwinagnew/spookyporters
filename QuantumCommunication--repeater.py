@@ -5,7 +5,12 @@ import random
 import qkd
 import numpy as np
 import math
+import binascii
 
+import pop_up
+pop_up.popUpWindow("fml", "if this isnt here everything crashes")
+
+#import TextBox
 #Colors
 background = (173,216,230)
 black = (0,0,0)
@@ -18,6 +23,7 @@ dark_red = (255,0,0)
 grey = (220,220,220)
 purple = (128,0,128)
 light_red = (255, 102, 102)
+yellow = (255,255,0)
 
 #QC initials
 nt = 0
@@ -30,13 +36,13 @@ key = []
 
 clicked = 0
 
-x0 = pygame.image.load('0x.png')
-x1 = pygame.image.load('1x.png')
-z1 = pygame.image.load('1z.png')
-z0 = pygame.image.load('0z.png')
-axisx = pygame.image.load('x.png')
-axisz = pygame.image.load('y.png')
-P = pygame.image.load('Capture.PNG')
+x0 = pygame.image.load('imgs/0x.png')
+x1 = pygame.image.load('imgs/1x.png')
+z1 = pygame.image.load('imgs/1z.png')
+z0 = pygame.image.load('imgs/0z.png')
+axisx = pygame.image.load('imgs/x.png')
+axisz = pygame.image.load('imgs/y.png')
+P = pygame.image.load('imgs/Capture.PNG')
 
 #repeater initials
 computers = {}
@@ -45,8 +51,9 @@ repeaters = {}
 connections = {}
 
 n = ""
+msg = ""
 
-LOSS = 0.05
+LOSS = 0.10
 
 #Game Initials
 pygame.init()
@@ -55,7 +62,7 @@ display_width = 800
 display_height = 600
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Quantum Communication')
-pygame.display.set_icon(pygame.image.load('icon.png'))
+pygame.display.set_icon(pygame.image.load('imgs/icon.png'))
 clock = pygame.time.Clock()
 
 ####################### repeaters #####################
@@ -64,7 +71,12 @@ def text_objects(text, font, colour=black):
 	return textSurface, textSurface.get_rect()
 
 def clearUI():
-  gameDisplay.fill(pygame.Color("white"), (0, display_height*2/3, display_width, display_height))
+  gameDisplay.fill(background, (0, display_height*2/3 + 50, display_width, display_height))
+  help_button = button("?", display_width-100, display_height*2/3 + 50, 50, 50, background, grey, action=show_help, text_size=30)
+
+def show_help():
+    pop_up.popUpWindow('Help?', 'In this level you must first create a secure connection between yourself and Bob.\n Since the distance is too great for a qubit to be sent without loss, you must set up a chain of repeaters which take in a qubit, and output it with greater signal.\n\nOnce a repeater has been placed, the bb84 protocol which you saw in the introduction is run, with green lines representing the successfully transmitted qubits and the red lines representing the lost ones. \nRemember that the further apart your repeaters are, the greater the loss.\n\nOnce you have a complete chain of repeaters, you will be able to send messages completely securely across any number of repeaters, only needing faith in the laws of quantum mechanics to trust its security.')
+
 
 
 def show_message(message):
@@ -85,8 +97,13 @@ def show_message(message):
         pygame.display.update()
         clock.tick(15)
 
+def show_tutorial():
+    show_message("In this level you will learn about chaining quantum repeaters to create a secure connection between any user")
+
 
 def draw_grid(top_left=(0, 0), width=display_width, height=int(display_height * 2 / 3)):  # 0 gamewidth 2/3 gamewidth
+    #gameDisplay.fill(background)
+
     # print(top_left, width, height)
     # print(repeaters)
     blockSize = 50  # Set the size of the grid block
@@ -119,9 +136,10 @@ def draw_connections():
 
 
 def main_loop():
-    textinput.clear_text()
+    #textinput.clear_text()
     qubits = 0
     intro = True
+
 
 
     while intro:
@@ -130,7 +148,7 @@ def main_loop():
             if event.type == pygame.QUIT:
                 quitgame()
         gameDisplay.fill(white)
-
+        clearUI()
         draw_grid((0, 0), display_width, int(display_height * 2 / 3))
         draw_connections()
 
@@ -174,7 +192,7 @@ def add():
 
     pygame.mouse.set_cursor(*pygame.cursors.broken_x)
     nearest_grid = choice_selection("Choose a grid to place your new connection",
-                                    (display_width * 2 / 3, display_height * 5 / 6), measure_distance_from=from_grid)
+                                    (display_width * 2 / 3, display_height * 5 / 6), measure_distance_from=from_grid, is_repeater=False)
 
     # smallText = pygame.font.Font("freesansbold.ttf", 12)
     # textSurf, textRect = text_objects("Choose a grid to place your new repeater", smallText)
@@ -190,6 +208,8 @@ def add():
 
 
 def send():
+    i = 0
+    global msg
     textinput.clear_text()
     while True:
         events = pygame.event.get()
@@ -197,22 +217,86 @@ def send():
             if event.type == pygame.QUIT:
                 quitgame()
         clearUI()
+
+
         smallText = pygame.font.Font("freesansbold.ttf", 16)
         textSurf, textRect = text_objects("What message would you like to send to Bob?", smallText)
-        textRect.center = (display_width * 1 / 2, display_height * 4.5 / 6)
+        textRect.center = (display_width * 1 / 2, display_height * 4.5 / 6 + 25)
         gameDisplay.blit(textSurf, textRect)
 
         textinput.update(events)
         gameDisplay.blit(textinput.get_surface(), (textRect.left, 500))
 
-        add_button = button("OK", textRect.left + 50, 500, 50, 50, green, dark_green, action=get_message)
+        add_button = button("OK", display_width/2, 525, 50, 50, green, dark_green, action=update_msg)
+
+        if len(msg) > 0:
+            clearUI()
+            createTextCenter(display_width*1/2, display_height*5/6, "Encoding '" + msg + "' ...", 24)
+
+            binary_msg = ' '.join(format(ord(x), 'b') for x in msg)
+            createTextCenter(display_width*1/2, display_height*5/6 + 25, binary_msg[:i], 16)
+            i += 1
+            if i == len(binary_msg): break
 
         pygame.display.update()
-        clock.tick(30)
+        clock.tick(15)
+
+    pygame.time.wait(1000)
+    update_msg(val="")
+    send_to_bob(binary_msg.split())
+
+
+def send_to_bob(message):
+    clearUI()
+    a=(100, 200) 
+    b=(650, 200)
+    path = get_path(a,b)
+    print("path: ", path)
+
+    createTextLeft(0, display_height*4.5/6 + 10, "Message: '" + " ".join(message) + "'             (=" + "".join([chr(int(x,2)) for x in message]) + ")", 20)
+
+    createTextLeft(0, display_height*5/6, "Sending: ", 18)
+
+    createTextLeft(0, display_height*5.5/6, "Status: ", 18) 
+
+    for j, letter in enumerate(message):
+        #col = random.choice([green, purple, yellow, blue, ])
+        col = [random.random() * 255, random.random() * 150, random.random() * 255]
+        while sum([abs(background[k] - col[k]) for k in range(3)]) < 30: 
+            col = [random.random() * 255, random.random() * 150, random.random() * 255]
+
+        createTextLeft(55 + j * 50, display_height*5/6, letter, 16, colour=col)
+        #createTextLeft(55 + j * 50, display_height*5.5/6, "success", 16, colour=green)
+        for i in range(len(path)-1):
+            a = path[i][0] + 50, path[i][1] + 20
+            b = path[i+1][0], path[i][1] + 20
+            loss = LOSS * get_dist(a, b)
+            red = int(loss * len(letter) + random.random())
+            draw_lines(red, len(letter)-red, a, b, block_size=10, green_col=col)
+
+            pygame.time.wait(500)
+        createTextLeft(55 + j * 50, display_height*5.5/6, "success", 16, colour=green)
+    pygame.display.update()
+    pygame.time.wait(1000)
+    pop_up.popUpWindow("Success", "You successfully sent the message '" + "".join([chr(int(x,2)) for x in message]) + "' to Bob")
+        
+        #print("here", j==len(message) -1 and 1/0)
+
+    main_loop()
+        
+
+
+def get_path(a, b):
+    if a == b: return [a]
+    path = [a]
+    for key in connections:
+        if connections[key][0] == path[-1]: return path + get_path(connections[key][1], b)
+        if path[-1] == b: return path
 
 
 def get_message():
-    print("hello")
+    global msg
+    msg = textinput.get_text()
 
 
 def choice_selection(message, position, is_repeater=True, measure_distance_from=None):
@@ -221,9 +305,9 @@ def choice_selection(message, position, is_repeater=True, measure_distance_from=
     textSurf, textRect = text_objects(message, smallText)
     textRect.center = position
     gameDisplay.blit(textSurf, textRect)
-
+ 
     remove_next = None
-
+ 
     while True:
         for event in pygame.event.get():
             # print(event)
@@ -234,25 +318,41 @@ def choice_selection(message, position, is_repeater=True, measure_distance_from=
                 if pos[1] < display_height * 2 / 3:
                     grid_block = (pos[0] - (pos[0] % 50), pos[1] - (pos[1] % 50))
                     if is_repeater:
-                        if grid_block in repeaters:
-                            # del repeaters[grid_block]
-                            print("TODO: implement deletion")
+                       
+                        #Make sure the first link is in a computer
+                        if len(repeaters) == 0 and grid_block not in computers:
+                            createTextLeft(display_width * 2 / 3, display_height * 5.5 / 6, "The first repeater must be in the computer", 16, colour=red)
+                            print("The fist repeater must be in the computer")
+                            continue
+                           
                         else:
-                            if measure_distance_from and qkd.calc_loss(LOSS, get_dist(grid_block,
-                                                                                      measure_distance_from)) == 1:
-                                smallText = pygame.font.Font("freesansbold.ttf", 12)
-                                textSurf, textRect = text_objects("Range is too great, try again", smallText,
-                                                                  colour=red)
-                                textRect.center = display_width * 3 / 4, display_height * 4.5 / 6
-                                gameDisplay.blit(textSurf, textRect)
+ 
+                        #Make sure that you don't click the same grid as another repeater
+                            if len(repeaters)%2 == 0 and len(repeaters) != 0 and grid_block not in repeaters:
+                                createTextLeft(display_width * 2/3, display_height*5.5/6, "The link must start in an existing repeater", 16, colour=red)
+                                print("The link must start in an existing repeater")
                                 continue
+ 
+                            elif grid_block in repeaters:
+                                # del repeaters[grid_block]
+                                print("TODO: implement deletion")
+                           
+                            #Adds the repeater to the list
                             else:
-                                repeaters[grid_block] = red
-                                draw_grid((0, 0), display_width, int(display_height * 2 / 3))
-                    else:
-                        if grid_block not in computers: print("choice must be in a computer", 1 / 0)
+                                if measure_distance_from and qkd.calc_loss(LOSS, get_dist(grid_block,
+                                                                                        measure_distance_from)) == 1:
+                                    smallText = pygame.font.Font("freesansbold.ttf", 12)
+                                    textSurf, textRect = text_objects("Range is too great, try again", smallText,
+                                                                    colour=red)
+                                    textRect.center = display_width * 3 / 4, display_height * 4.5 / 6
+                                    gameDisplay.blit(textSurf, textRect)
+                                    continue
+                                else:
+                                    repeaters[grid_block] = red
+                                    draw_grid((0, 0), display_width, int(display_height * 2 / 3))
+ 
                     return grid_block
-
+ 
         if measure_distance_from:
             gameDisplay.fill(pygame.Color("white"), (position[0] - 100, position[1] + 25, 200, 50))
             pos = pygame.mouse.get_pos()
@@ -264,18 +364,18 @@ def choice_selection(message, position, is_repeater=True, measure_distance_from=
             textSurf, textRect = text_objects(label, smallText, colour=colour)
             textRect.center = (position[0], position[1] + 50)
             gameDisplay.blit(textSurf, textRect)
-
+ 
             if remove_next and nearest != remove_next:  # and nearest not in repeaters and nearest not in computers and nearest[1] * 50 < display_height * 2/3:
                 rect = pygame.Rect(remove_next[0], remove_next[1], 50, 50)
                 pygame.draw.rect(gameDisplay, white, rect, 0)
                 pygame.draw.rect(gameDisplay, grey, rect, 1)
                 remove_next = None
-
+ 
             if nearest not in computers and nearest not in repeaters:
                 rect = pygame.Rect(nearest[0], nearest[1], 50, 50)
                 pygame.draw.rect(gameDisplay, light_red, rect, 0)
                 remove_next = nearest
-
+ 
         pygame.display.update()
         clock.tick(30)
 
@@ -295,7 +395,7 @@ def create_key(a, b):
         smallText = pygame.font.Font("freesansbold.ttf", 16)
         textSurf, textRect = text_objects("How many qubits do you want to send to the repeater to create the key?",
                                           smallText)
-        textRect.center = (display_width * 1 / 2, display_height * 4.5 / 6)
+        textRect.center = (display_width * 1 / 2, display_height * 4.5 / 6 + 25)
         gameDisplay.blit(textSurf, textRect)
 
         textinput.update(events)
@@ -336,10 +436,8 @@ def create_key(a, b):
 
             repeaters[b] = green
             connections[q.get_key()] = (a, b)
-            print("connections: ", connections)
             if complete_path():
-                show_message(
-                    "Congratulations! You have created a completely secure path between you and Bob, you may now send and encrypt messages to each other")
+                pop_up.popUpWindow("Path complete", "Congratulations! You have created a completely secure path between you and Bob, you may now send and encrypt messages to each other")
             n = ""
             main_loop()
 
@@ -353,7 +451,13 @@ def update_n(val=None):
         n = val
     else:
         n = textinput.get_text()
-    print("n now", n, len(n))
+
+def update_msg(val=None):
+    global msg
+    if type(val) == str:
+        msg = val
+    else:
+        msg = textinput.get_text()
 
 
 def get_dist(p0, p1):
@@ -369,7 +473,7 @@ def complete_path(a=(100, 200), b=(650, 200)):
     return False
 
 
-def draw_lines(red_lines, green_lines, a, b):
+def draw_lines(red_lines, green_lines, a, b, block_size=50, green_col=green):
     red_remaining = red_lines
     green_remaining = green_lines
 
@@ -383,18 +487,18 @@ def draw_lines(red_lines, green_lines, a, b):
             if event.type == pygame.QUIT:
                 quitgame()
 
-        gameDisplay.fill(pygame.Color("white"), (a[0], a[1], b[0] - a[0], b[1] - a[1] + 50))
+        gameDisplay.fill(pygame.Color("white"), (a[0], a[1], b[0] - a[0], b[1] - a[1] + block_size))
         if green_remaining > 0 and random.random() > red_remaining / green_remaining:
             # draw a green line
-            sep = n_drawn / green_lines * 50
+            sep = n_drawn / green_lines * block_size
             coords = ((a[0], a[1] + sep), (b[0], b[1] + sep))
             # pygame.draw.line(gameDisplay, green, (a[0], a[1] + sep), (b[0], b[1] + sep)))
             drawn_lines["green"].append(coords)
             n_drawn += 1
             green_remaining -= 1
         elif red_remaining > 0:
-            sep1 = random.random() * 50
-            sep2 = random.random() * 50
+            sep1 = random.random() * block_size
+            sep2 = random.random() * block_size
             coords = ((a[0], a[1] + sep1), (b[0], b[1] + sep2))
             drawn_lines["red"].insert(0, coords)
             red_remaining -= 1
@@ -404,21 +508,25 @@ def draw_lines(red_lines, green_lines, a, b):
         drawn_lines["red"] = drawn_lines["red"][:red_lines + green_lines]
 
         # print("drawing ", len(drawn_lines["green"]), " green lines")
+        if block_size == 100: 
+            print(red_lines, green_lines)
+            print(drawn_lines["red"])
         for fr, to in drawn_lines["green"]:
-            pygame.draw.line(gameDisplay, green, fr, to, 2)
+            pygame.draw.line(gameDisplay, green_col, fr, to, 2)
         for i, (fr, to) in enumerate(drawn_lines["red"]):
             if (fr, to) != (0, 0):
                 c = (i + 1) / len(drawn_lines["red"]) * 255
                 new_col = [min(j + c, 255) for j in red]
                 # print("drawing red with colour", new_col)
-                pygame.draw.line(gameDisplay, red + (i / len(drawn_lines["red"]),), fr, to)
+                #pygame.draw.line(gameDisplay, red + (i / len(drawn_lines["red"]),), fr, to)
+                pygame.draw.line(gameDisplay, new_col, fr, to)
 
         pygame.display.update()
         clock.tick(30)
 ####################### repeaters #####################
 
 ####################### QC #####################
-def button(text, x, y, w, h, dark, light, action=None):
+def button(text, x, y, w, h, dark, light, action=None, text_size=20):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
@@ -430,20 +538,20 @@ def button(text, x, y, w, h, dark, light, action=None):
     else:
         pygame.draw.rect(gameDisplay, dark, (x, y, w, h))
 
-    smallText = pygame.font.SysFont("comicsansms", 20)
+    smallText = pygame.font.SysFont("comicsansms", text_size)
     textSurf, textRect = text_objects(text, smallText)
     textRect.center = ((x + (w / 2)), (y + (h / 2)))
     gameDisplay.blit(textSurf, textRect)
 
-def createTextLeft(x, y, text, fontsize):
+def createTextLeft(x, y, text, fontsize, colour=black):
     smallText = pygame.font.SysFont("comicsansms", fontsize)
-    textSurf, textRect = text_objects(text, smallText)
+    textSurf, textRect = text_objects(text, smallText, colour=colour)
     textRect.midleft = (x, y)
     gameDisplay.blit(textSurf, textRect)
 
-def createTextCenter(x, y, text, fontsize):
+def createTextCenter(x, y, text, fontsize, colour=black):
     smallText = pygame.font.SysFont("comicsansms", fontsize)
-    textSurf, textRect = text_objects(text, smallText)
+    textSurf, textRect = text_objects(text, smallText, colour=colour)
     textRect.center = (x, y)
     gameDisplay.blit(textSurf, textRect)
 
@@ -753,7 +861,7 @@ def final():
         createTextCenter((display_width / 2), (display_height / 3 + 60), str(key), 20)
         button("Play Again!", 250, (display_height / 3 + 150), 300, 50, dark_green, green, game_intro)
 
-        button("Next Level!", 250, (display_height / 3 + 250), 300, 50, dark_red, red, main_loop)
+        button("Next Level!", 250, (display_height / 3 + 250), 300, 50, dark_red, red, show_tutorial)
 
         pygame.display.update()
         clock.tick(15)
@@ -762,5 +870,5 @@ def sender_help():
     pass
 
 
-game_intro()
-#main_loop()
+#game_intro()
+main_loop()

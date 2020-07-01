@@ -29,6 +29,7 @@ repeaters = {}
 connections = {}
 
 n = ""
+msg = ""
 
 LOSS = 0.05
 
@@ -193,6 +194,7 @@ def add():
 def send():
   textinput.clear_text()
   while True:
+    global msg
     events = pygame.event.get()
     for event in events:
       if event.type == pygame.QUIT:
@@ -206,13 +208,23 @@ def send():
     textinput.update(events)
     gameDisplay.blit(textinput.get_surface(), (textRect.left,500))
 
-    add_button = button("OK", textRect.left + 50, 500, 50, 50, green, dark_green, action=get_message)
+    add_button = button("OK", textRect.left + 50, 600, 50, 50, green, dark_green, action=get_message)
+
+    if len(msg) > 0:
+      clearUI()
+      binary_msg = ' '.join(format(ord(x), 'b') for x in msg)
+      smallText = pygame.font.Font("freesansbold.ttf", 16)
+      textSurf, textRect = text_objects("Encoding '" + msg + "' ...", smallText)
+      textRect.center = (display_width*1/2, display_height*4.5/6)
+      gameDisplay.blit(textSurf, textRect)
+
 
     pygame.display.update()
     clock.tick(30)
 
 def get_message():
-  print("hello")
+  global msg
+  msg = textinput.get_text()
 
 
 def choice_selection(message, position, is_repeater=True, measure_distance_from=None):
@@ -350,7 +362,7 @@ def update_n(val=None):
   global n
   if type(val) == str: n = val
   else: n = textinput.get_text()
-  print("n now", n, len(n))
+  #print("n now", n, len(n))
 
 def get_dist(p0, p1):
     return math.sqrt( ((p0[0] - p1[0])/50)**2 +((p0[1] - p1[1])/50)**2)
@@ -361,6 +373,7 @@ def complete_path(a=(100,200), b=(650, 200)):
   for key in connections:
     if connections[key] == (a,b): return True
     if connections[key][0] == a: return complete_path(a=connections[key][1], b=b)
+    if connections[key][1] == b: return complete_path(a=a, b=connections[key][0])
   return False
 
 
