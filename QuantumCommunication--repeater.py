@@ -58,7 +58,7 @@ sent_messages = {}
 n = ""
 msg = ""
 
-LOSS = 0.10
+LOSS = 0.05
 
 #Game Initials
 pygame.init()
@@ -295,7 +295,7 @@ def send_to_bob(message):
         while sum([abs(background[k] - col[k]) for k in range(3)]) < 30: 
             col = [random.random() * 255, random.random() * 150, random.random() * 255]
 
-        createTextLeft(55 + j * 50, display_height*5/6, letter, 16, colour=col)
+        createTextLeft(80 + j * 80, display_height*5/6, letter, 16, colour=col)
         #createTextLeft(55 + j * 50, display_height*5.5/6, "success", 16, colour=green)
         for i in range(len(path)-1):
             a = path[i][0] + 50, path[i][1] + 20
@@ -305,7 +305,7 @@ def send_to_bob(message):
             draw_lines(red, len(letter)-red, a, b, block_size=10, green_col=col)
 
             pygame.time.wait(500)
-        createTextLeft(55 + j * 50, display_height*5.5/6, "success", 16, colour=green)
+        createTextLeft(80 + j * 80, display_height*5.5/6, "success", 16, colour=green)
     pygame.display.update()
     pygame.time.wait(1000)
     pop_up.popUpWindow("Success", "You successfully sent the message '" + "".join([chr(int(x,2)) for x in message]) + "' to Bob")
@@ -718,7 +718,7 @@ def tutorial():
         gameDisplay.fill(background)
 
         createTextCenter((display_width / 2), (display_height / 7),
-                         "In Quantum Communication, one way to encrypy the message", 20)
+                         "In Quantum Communication, one way to encrypt the message", 20)
         createTextCenter((display_width / 2), (display_height / 7 + 30),
                          "is to use the method called Quantum Key Distribution.", 20)
         createTextCenter((display_width / 2), (display_height / 7 + 60),
@@ -951,9 +951,9 @@ def final():
             createTextCenter((display_width / 2), (display_height / 3), "Ops, sorry!", 20)
             createTextCenter((display_width / 2), (display_height / 3 + 30), "It seems you don't have enough sequence to generate a key.", 20)
             createTextCenter((display_width / 2), (display_height / 3 + 60), "Please play again and try sending more Qubits!", 20)
-        button("Play Again!", 250, (display_height / 3 + 150), 300, 50, dark_green, green, game_intro)
+        button("Play Again!", 75, (display_height / 3 + 150), 250, 50, dark_green, green, game_intro)
 
-        button("Next Level!", 250, (display_height / 3 + 250), 300, 50, dark_red, red, show_tutorial)
+        button("Next Level!", 450, (display_height / 3 + 150), 250, 50, dark_red, red, show_tutorial)
 
         pygame.display.update()
         clock.tick(15)
@@ -964,3 +964,4 @@ def sender_help():
 
 game_intro()
 #main_loop()
+#final()
