@@ -713,6 +713,7 @@ def game_Sender():
         textinput.update(events)
         pygame.draw.rect(gameDisplay, pygame.Color("white"), (display_width / 2-50, 145, 120, 40))
         gameDisplay.blit(textinput.get_surface(), (display_width / 2, 150))
+        hover(display_width / 2 - 50, 185, "Please no more than 16!")
 
         button("OK", 600, 150, 30, 30, green, dark_green, Qubit)
 
@@ -842,17 +843,17 @@ def generate():
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        if 350 + 100 > mouse[0] > 350 and 470 + 30 > mouse[1] > 470:
-            pygame.draw.rect(gameDisplay, green, (350, 470, 100, 30))
+        if 350 + 100 > mouse[0] > 350 and 320 + 30 > mouse[1] > 320:
+            pygame.draw.rect(gameDisplay, green, (350, 320, 100, 30))
 
             if click[0] == 1:
                 clicked = 1
         else:
-            pygame.draw.rect(gameDisplay, dark_green, (350, 470, 100, 30))
+            pygame.draw.rect(gameDisplay, dark_green, (350, 320, 100, 30))
 
         smallText = pygame.font.SysFont("comicsansms", 20)
         textSurf, textRect = text_objects("Compare!", smallText)
-        textRect.center = ((350 + (100 / 2)), (470 + (30 / 2)))
+        textRect.center = ((350 + (100 / 2)), (320 + (30 / 2)))
         gameDisplay.blit(textSurf, textRect)
 
         if clicked:
@@ -876,9 +877,14 @@ def final():
         gameDisplay.fill(background)
         compare()
         createTextCenter((display_width / 2), (display_height / 20), "Shared Secret Key", 40)
-        createTextCenter((display_width / 2), (display_height / 3 ), "Bingo!", 20)
-        createTextCenter((display_width / 2), (display_height / 3 + 30), "The private key for this message is:", 20)
-        createTextCenter((display_width / 2), (display_height / 3 + 60), str(key), 20)
+        if key != []:
+            createTextCenter((display_width / 2), (display_height / 3 ), "Bingo!", 20)
+            createTextCenter((display_width / 2), (display_height / 3 + 30), "The private key for this message is:", 20)
+            createTextCenter((display_width / 2), (display_height / 3 + 60), str(key), 20)
+        else:
+            createTextCenter((display_width / 2), (display_height / 3), "Ops, sorry!", 20)
+            createTextCenter((display_width / 2), (display_height / 3 + 30), "It seems you don't have enough sequence to generate a key.", 20)
+            createTextCenter((display_width / 2), (display_height / 3 + 60), "Please play again and try sending more Qubits!", 20)
         button("Play Again!", 250, (display_height / 3 + 150), 300, 50, dark_green, green, game_intro)
 
         button("Next Level!", 250, (display_height / 3 + 250), 300, 50, dark_red, red, show_tutorial)
