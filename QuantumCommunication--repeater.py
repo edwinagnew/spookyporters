@@ -37,6 +37,7 @@ z0 = pygame.image.load('0z.png')
 axisx = pygame.image.load('x.png')
 axisz = pygame.image.load('y.png')
 P = pygame.image.load('Capture.PNG')
+tip = pygame.image.load('tooltip.png')
 
 #repeater initials
 computers = {}
@@ -435,6 +436,14 @@ def button(text, x, y, w, h, dark, light, action=None):
     textRect.center = ((x + (w / 2)), (y + (h / 2)))
     gameDisplay.blit(textSurf, textRect)
 
+def hover(x, y, hover_text):
+    mouse = pygame.mouse.get_pos()
+    showImg(x,y, tip)
+    if x + 16 > mouse[0] > x and y + 16 > mouse[1] > y:
+        createTextLeft(x + 20, y + 8, hover_text, 15)
+
+
+
 def createTextLeft(x, y, text, fontsize):
     smallText = pygame.font.SysFont("comicsansms", fontsize)
     textSurf, textRect = text_objects(text, smallText)
@@ -578,6 +587,7 @@ def game_Sender():
 
         createTextCenter((display_width / 2), (display_height / 20), "Message Sender", 40)
         showImg(10, 10, P)
+        hover(700, (display_height / 20), "Hello")
 
         createTextCenter(display_width / 2, 120, "Please choose the number of Qubits you want to send to generate the key:", 20)
 
