@@ -552,6 +552,8 @@ def hover(x, y, hover_text, line2='',line3=''):
     showImg(x,y, tip)
     if x + 16 > mouse[0] > x and y + 16 > mouse[1] > y:
         createTextLeft(x + 20, y + 8, hover_text, 15)
+        createTextLeft(x + 20, y + 23, line2, 15)
+        createTextLeft(x + 20, y + 38, line3, 15)
 
 def createTextLeft(x, y, text, fontsize, colour=black):
     smallText = pygame.font.SysFont("comicsansms", fontsize)
@@ -704,7 +706,7 @@ def game_Sender():
 
         createTextCenter((display_width / 2), (display_height / 20), "Message Sender", 40)
         showImg(10, 10, P)
-        hover(120, 60, "The")
+        hover(120, 60, "The sender is sending a random sequence of Qubits that based on Z or X axis", "each bit has a value of 0 or 1 for key generation")
 
         createTextCenter(display_width / 2, 120, "Please choose the number of Qubits you want to send to generate the key:", 20)
 
@@ -715,8 +717,7 @@ def game_Sender():
         button("OK", 600, 150, 30, 30, green, dark_green, Qubit)
 
         createTextLeft(50, 220, "Random qubits in Random bases are:", 20)
-        #createTextCenter((display_width / 2), 250, str(qlist), 20)
-        #showImg((display_width / 2 + 30), 270, x0)
+
         i = 0
         while i < len(qlist):
             if qlist[i] == '1x':
