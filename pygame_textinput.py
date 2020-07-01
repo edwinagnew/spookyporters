@@ -20,8 +20,8 @@ class TextInput:
     def __init__(
             self,
             initial_string="",
-            font_family="comicsansms",
-            font_size=20,
+            font_family="",
+            font_size=35,
             antialias=True,
             text_color=(0, 0, 0),
             cursor_color=(0, 0, 1),
