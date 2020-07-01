@@ -477,11 +477,15 @@ def create_key(a, b):
 
         elif q:
             run = False
-            createTextCenter(a[0], a[1] + 100, "My bases were: " + " ".join(q.alice_bases[:5]) + "..." * int(len(q.alice_bases) > 5), 16)
+            if not added_a:
+                createTextCenter(a[0], a[1] + 100, "My bases were: " + " ".join(q.alice_bases[:5]) + "..." * int(len(q.alice_bases) > 5), 16)
+                added_a = True
 
             if 0.9 < time.time() - t < 1:
                 b_filt = [z for z in q.bob_bases if z != -1]
-                createTextCenter(b[0], b[1] - 50, "My bases were: " + " ".join(b_filt[:5]) + "..." * int(len(b_filt) > 5), 16)
+                if not added_b:
+                    createTextCenter(b[0], b[1] - 50, "My bases were: " + " ".join(b_filt[:5]) + "..." * int(len(b_filt) > 5), 16)
+                    added_b = True
 
             if 3.9 < time.time() - t < 4:
 
