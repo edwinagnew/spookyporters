@@ -738,7 +738,7 @@ def game_Sender():
         createTextLeft(50, 320, "Bases are:", 20)
         #createTextCenter((display_width / 2), 350, str(aliceBases), 20)
         createTextLeft(50, 420, "Bit Sequence is:",20)
-        createTextCenter((display_width / 2), 450, str(aliceBits), 20)
+        createTextLeft(100, 450, str(aliceBits), 20)
 
         if qlist != []:
             button("Send", 600, 500, 100, 50, dark_green, green, receiver)
@@ -760,6 +760,8 @@ def receiver():
 
         createTextCenter((display_width / 2), (display_height / 20), "Message Receiver", 40)
         showImg(10, 10, P)
+        hover(120, 60, "After receiving the Qubits, the receiver will generate a sequence of random bases",
+              "with the same amount of Qubits, and send the bases back to sender for key comparing")
 
         createTextCenter(display_width / 2, 170, "The qubits received are:", 20)
         i = 0
@@ -806,6 +808,9 @@ def generate():
         gameDisplay.fill(background)
 
         createTextCenter((display_width / 2), (display_height / 20), "Key Comparing", 40)
+        hover(270, 60, "The method will analyze the Qubits using both sequence of bases.",
+              "If a bit is analyzed by a different base, the result will be an ",
+              "uncertain value, which is represented by '-'")
 
         createTextCenter((display_width / 2), 120, "The Qubit Sequence is:", 20)
         #createTextCenter((display_width / 2), 150, str(qlist), 20)
@@ -820,14 +825,14 @@ def generate():
             else:
                 showImg((100 + i * 40), 150, z0)
             i = i + 1
-        createTextCenter((display_width / 2), 230, "The Base Sequence of Sender is:",20)
+        createTextCenter((display_width / 2), 200, "The Base Sequence of Sender is:",20)
         #createTextCenter((display_width / 2), 230, str(aliceBases), 20)
         k = 0
         while k < len(aliceBases):
             if aliceBases[k] == 'x':
-                showImg((100 + k * 40), 260, axisx)
+                showImg((100 + k * 40), 230, axisx)
             else:
-                showImg((100 + k * 40), 260, axisz)
+                showImg((100 + k * 40), 230, axisz)
             k = k + 1
 
         createTextCenter((display_width / 2), 360, "The Base Sequence of Receiver is:", 20)
@@ -843,23 +848,25 @@ def generate():
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        if 350 + 100 > mouse[0] > 350 and 320 + 30 > mouse[1] > 320:
-            pygame.draw.rect(gameDisplay, green, (350, 320, 100, 30))
+        if 350 + 100 > mouse[0] > 350 and 300 + 30 > mouse[1] > 300:
+            pygame.draw.rect(gameDisplay, green, (350, 300, 100, 30))
 
             if click[0] == 1:
                 clicked = 1
         else:
-            pygame.draw.rect(gameDisplay, dark_green, (350, 320, 100, 30))
+            pygame.draw.rect(gameDisplay, dark_green, (350, 300, 100, 30))
 
         smallText = pygame.font.SysFont("comicsansms", 20)
         textSurf, textRect = text_objects("Compare!", smallText)
-        textRect.center = ((350 + (100 / 2)), (320 + (30 / 2)))
+        textRect.center = ((350 + (100 / 2)), (300 + (30 / 2)))
         gameDisplay.blit(textSurf, textRect)
 
+        hover(450, 310, "After comparing the result", "The uncertain values will be discarded", "and the remain values will be the key")
+
         if clicked:
-            createTextCenter((display_width / 2), 300, str(aliceBits), 20)
-            createTextCenter((display_width / 2), 430, str(bobBits), 20)
-            button("Generate Private Key!", 250, 520, 300, 50, dark_green, green, final)
+            createTextLeft(100, 270, str(aliceBits), 20)
+            createTextLeft(100, 430, str(bobBits), 20)
+            button("Generate Private Key!", 250, 480, 300, 50, dark_green, green, final)
 
         pygame.display.update()
         clock.tick(15)
