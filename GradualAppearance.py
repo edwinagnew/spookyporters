@@ -45,6 +45,8 @@ class GradualAppearance:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+            pygame.display.update()
+            #clock.tick(15)
 
 
 a = GradualAppearance('YOUR QUANTUM EXPERIENCE STARTS HERE!')
