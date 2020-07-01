@@ -347,12 +347,20 @@ def choice_selection(message, position, is_repeater=True, measure_distance_from=
                                     smallText = pygame.font.Font("freesansbold.ttf", 12)
                                     textSurf, textRect = text_objects("Range is too great, try again", smallText,
                                                                     colour=red)
-                                    textRect.center = display_width * 3 / 4, display_height * 4.5 / 6
+                                    textRect.center = display_width * 2/3, display_height * 4.75 / 6
                                     gameDisplay.blit(textSurf, textRect)
                                     continue
                                 else:
                                     repeaters[grid_block] = red
                                     draw_grid((0, 0), display_width, int(display_height * 2 / 3))
+                    elif measure_distance_from and qkd.calc_loss(LOSS, get_dist(grid_block,
+                                                                                        measure_distance_from)) == 1:
+                                    smallText = pygame.font.Font("freesansbold.ttf", 12)
+                                    textSurf, textRect = text_objects("Range is too great, try again", smallText,
+                                                                    colour=red)
+                                    textRect.center = display_width * 2 / 3, display_height * 4.75 / 6
+                                    gameDisplay.blit(textSurf, textRect)
+                                    continue
  
                     return grid_block
  
@@ -384,6 +392,8 @@ def choice_selection(message, position, is_repeater=True, measure_distance_from=
 
 
 def create_key(a, b):
+    t = 0
+    run = True
     q = None
     while True:
         global n
@@ -416,15 +426,17 @@ def create_key(a, b):
                 textRect.center = (textRect.left + 50, display_height * 5.5 / 6)
                 gameDisplay.blit(textSurf, textRect)
 
-        if type(n) == int and n > 0:
+        if run and type(n) == int and n > 0:
             q = qkd.bb84(n, p=LOSS)
             dist = get_dist(a, b)
             q.run_protocol(dist)
             draw_lines(q.n_sent - q.n_received, q.n_received, (a[0] + 50, a[1]), b)
 
             draw_grid()
+            t = time.time()
 
-        if q and (not q.get_key() or q.get_key() == "error" or q.get_key() in connections):
+
+        if run and q and (not q.get_key() or q.get_key() == "error" or q.get_key() in connections):
             textSurf, textRect = text_objects("An empty or identical key has been generated, try sending more qubits",
                                               smallText, colour=red)
             textRect.topleft = (textRect.left + 150, display_height * 5.75 / 6)
@@ -433,16 +445,30 @@ def create_key(a, b):
 
 
         elif q:
-            clearUI()
+            run = False
+            print(q, q.get_key())      
+            createTextCenter(a[0], a[1] + 100, "My bases were: " + " ".join(q.alice_bases[:5]) + "..." * int(len(q.alice_bases) > 5), 18)
 
-            print("great success")
+            if 0.9 < time.time() - t < 1:
+                b_filt = [z for z in q.bob_bases if q != -1]
+                createTextCenter(b[0], b[1] - 50, "My bases were: \n" + " ".join(b_filt[:5]) + "..." * int(len(b_filt) > 5), 18)
+    
 
-            repeaters[b] = green
-            connections[q.get_key()] = (a, b)
-            if complete_path():
-                pop_up.popUpWindow("Path complete", "Congratulations! You have created a completely secure path between you and Bob, you may now send and encrypt messages to each other")
-            n = ""
-            main_loop()
+            if 4.9 < time.time() - t < 5:
+
+                clearUI()
+
+                print("great success")
+
+                repeaters[b] = green
+                connections[q.get_key()] = (a, b)
+                if complete_path():
+                    draw_grid()
+                    pygame.display.update()
+
+                    pop_up.popUpWindow("Path complete", "Congratulations! You have created a completely secure path between you and Bob, you may now send and encrypt messages to each other")
+                n = ""
+                main_loop()
 
         pygame.display.update()
         clock.tick(30)
@@ -896,5 +922,5 @@ def sender_help():
     pass
 
 
-game_intro()
-#main_loop()
+#game_intro()
+main_loop()
